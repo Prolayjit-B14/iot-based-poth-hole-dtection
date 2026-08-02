@@ -89,3 +89,12 @@ $$\text{Bump Elevation} = \text{Baseline} - \text{Ultrasonic Distance} < 20\text
 ## 🗄️ Database Setup (Supabase / PostgreSQL)
 
 Import `database/schema.sql` into your PostgreSQL database or Supabase SQL Editor to create tables for `devices`, `detections`, `alerts`, `users`, and `images`.
+
+---
+
+## 👤 Author & Project Maintainer
+
+- **Developer**: **Prolayjit Biswas** ([@Prolayjit-B14](https://github.com/Prolayjit-B14))
+- **Email**: `prolayjitbiswas14112004@gmail.com`
+- **Repository**: [https://github.com/Prolayjit-B14/iot-based-poth-hole-dtection](https://github.com/Prolayjit-B14/iot-based-poth-hole-dtection)
+
