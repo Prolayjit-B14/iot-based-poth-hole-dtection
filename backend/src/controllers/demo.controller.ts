@@ -84,13 +84,19 @@ export class DemoController {
   // POST /api/demo/move-gps
   public moveGps(req: Request, res: Response) {
     try {
-      const dev = dataStore.getDeviceById('ESP32-ROAD-001');
+      let dev = dataStore.getDeviceById('ESP32-ROAD-001');
       if (dev) {
         const deltaLat = (Math.random() - 0.48) * 0.003;
         const deltaLng = (Math.random() - 0.48) * 0.003;
-        dev.latitude = Number((dev.latitude + deltaLat).toFixed(5));
-        dev.longitude = Number((dev.longitude + deltaLng).toFixed(5));
-        dev.lastSeen = new Date().toISOString();
+        const newLat = Number((dev.latitude + deltaLat).toFixed(5));
+        const newLng = Number((dev.longitude + deltaLng).toFixed(5));
+
+        dev = dataStore.registerOrUpdateDevice({
+          deviceId: dev.deviceId,
+          latitude: newLat,
+          longitude: newLng,
+          status: 'ONLINE'
+        });
 
         wsService.broadcast('GPS_LOCATION_UPDATE', { deviceId: dev.deviceId, latitude: dev.latitude, longitude: dev.longitude });
       }

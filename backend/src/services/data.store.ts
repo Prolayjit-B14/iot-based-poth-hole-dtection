@@ -1,4 +1,5 @@
 import { Device, Detection, Alert, CameraSnapshot, SystemStats } from '../types';
+import { wsService } from './websocket.service';
 
 class DataStoreService {
   private devices: Map<string, Device> = new Map();
@@ -281,7 +282,10 @@ class DataStoreService {
       dev.status = 'ONLINE';
       if (newDetection.type !== 'NORMAL') {
         dev.buzzerStatus = 'ACTIVE';
-        setTimeout(() => { dev.buzzerStatus = 'INACTIVE'; }, 3000);
+        setTimeout(() => {
+          dev.buzzerStatus = 'INACTIVE';
+          wsService.broadcast('DEVICE_UPDATED', { device: dev });
+        }, 3000);
       }
     }
 
