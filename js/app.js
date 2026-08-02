@@ -3,8 +3,8 @@
  */
 import { store } from './store.js';
 import { router } from './router.js';
-import { api } from './services/api.js';
 import { wsClient } from './services/ws.js';
+import { mqttService } from './services/mqtt.js';
 
 import { mapModule } from './modules/map.js';
 import { telemetryModule } from './modules/telemetry.js';
@@ -17,12 +17,15 @@ import { simulationModule } from './modules/simulation.js';
 
 class App {
   init() {
-    console.log('🚀 Initializing SmartRoad AI Vanilla JS Application');
+    console.log('🚀 Initializing SmartRoad AI Clean Mobile-Responsive App');
 
     // 1. Initialize View Router
     router.init();
 
-    // 2. Initialize UI Modules
+    // 2. Initialize Mobile Navigation Drawer Handlers
+    this.initMobileNav();
+
+    // 3. Initialize UI Modules
     telemetryModule.init();
     cameraModule.init();
     tableModule.init();
@@ -32,27 +35,58 @@ class App {
     simulationModule.init();
     mapModule.init();
 
-    // 3. Handle View Change Triggers (e.g. Map Size Fixes)
+    // 4. Handle View Change Triggers (e.g. Map Size Fixes & Mobile Drawer Closing)
     router.onViewChange((viewId) => {
+      this.closeMobileNav();
       if (viewId === 'map' || viewId === 'dashboard') {
         setTimeout(() => mapModule.invalidateSize(), 200);
       }
     });
 
-    // 4. Connect WebSocket Client
+    // 5. Connect WebSocket & MQTT Clients
     wsClient.connect();
+    mqttService.connect();
 
-    // 5. Start Header Clock Timer & KPI Updates
+    // 6. Start Header Clock Timer
     this.startHeaderClock();
 
-    // 6. Subscribe to State Changes for KPI Metric Counters
+    // 7. Subscribe to State Changes for KPI Metric Counters
     store.subscribe('STATE_CHANGED', () => this.updateKPIs());
     store.subscribe('DETECTIONS_UPDATED', () => this.updateKPIs());
     store.subscribe('DEVICES_UPDATED', () => this.updateKPIs());
     this.updateKPIs();
 
-    // 7. Render Lucide Icons
+    // 8. Render Lucide Icons
     this.refreshIcons();
+  }
+
+  initMobileNav() {
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const openBtn = document.getElementById('btn-toggle-sidebar');
+    const closeBtn = document.getElementById('btn-close-sidebar');
+
+    if (openBtn && sidebar && backdrop) {
+      openBtn.addEventListener('click', () => {
+        sidebar.classList.add('open');
+        backdrop.classList.add('active');
+      });
+    }
+
+    if (closeBtn && sidebar && backdrop) {
+      closeBtn.addEventListener('click', () => this.closeMobileNav());
+    }
+
+    if (backdrop && sidebar) {
+      backdrop.addEventListener('click', () => this.closeMobileNav());
+    }
+  }
+
+  closeMobileNav() {
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('active');
   }
 
   startHeaderClock() {

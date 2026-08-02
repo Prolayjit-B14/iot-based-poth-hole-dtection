@@ -36,6 +36,16 @@ class CameraModule {
     if (!this.galleryEl) return;
     const { snapshots } = store.getState();
 
+    if (snapshots.length === 0) {
+      this.galleryEl.innerHTML = `
+        <div class="col-span-full glass-card p-8 text-center text-slate-500 font-mono space-y-2">
+          <p class="text-xs">No camera snapshots captured yet.</p>
+          <p class="text-[10px] text-slate-600">Click "Capture Snapshot" above or log a pothole detection.</p>
+        </div>
+      `;
+      return;
+    }
+
     this.galleryEl.innerHTML = snapshots.map(snap => `
       <div class="glass-card p-3 space-y-2 border border-slate-800 rounded-xl overflow-hidden">
         <img src="${snap.imageUrl}" class="w-full h-32 object-cover rounded-lg border border-slate-800" alt="Snapshot" />

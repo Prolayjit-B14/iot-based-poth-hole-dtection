@@ -16,6 +16,16 @@ class DevicesModule {
     if (!this.gridEl) return;
     const { devices } = store.getState();
 
+    if (devices.length === 0) {
+      this.gridEl.innerHTML = `
+        <div class="col-span-full glass-card p-8 text-center text-slate-500 font-mono space-y-2">
+          <p class="text-xs">No active ESP32 units registered.</p>
+          <p class="text-[10px] text-slate-600">Click "Simulate Pothole" or "Move GPS" in the simulation bar to connect a unit.</p>
+        </div>
+      `;
+      return;
+    }
+
     this.gridEl.innerHTML = devices.map(dev => `
       <div class="glass-card p-5 space-y-3 border border-slate-800">
         <div class="flex justify-between items-center">

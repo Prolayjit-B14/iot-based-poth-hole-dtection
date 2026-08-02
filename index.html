@@ -24,21 +24,31 @@
   <!-- Application Unified CSS Design System -->
   <link rel="stylesheet" href="./css/style.css" />
 </head>
-<body class="bg-[#0B0F19] text-slate-100 font-sans antialiased">
+<body class="bg-[#070A12] text-slate-100 font-sans antialiased">
   <div class="app-container">
     
-    <!-- Sidebar Navigation -->
-    <aside class="app-sidebar select-none">
+    <!-- Mobile Navigation Sidebar Backdrop -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <!-- Sidebar Navigation Drawer -->
+    <aside id="app-sidebar" class="app-sidebar select-none">
       <div class="sidebar-header">
-        <div class="p-2.5 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-500 shadow-glow-cyan">
-          <i data-lucide="radio" class="w-6 h-6 text-white animate-pulse"></i>
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-500 shadow-glow-cyan">
+            <i data-lucide="radio" class="w-6 h-6 text-white animate-pulse"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent font-display">
+              SmartRoad <span class="text-cyan-400">AI</span>
+            </h1>
+            <p class="text-[10px] uppercase font-mono tracking-widest text-cyan-400 font-semibold">IoT Road Detection</p>
+          </div>
         </div>
-        <div>
-          <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent font-display">
-            SmartRoad <span class="text-cyan-400">AI</span>
-          </h1>
-          <p class="text-[10px] uppercase font-mono tracking-widest text-cyan-400 font-semibold">IoT Road Detection</p>
-        </div>
+        
+        <!-- Mobile Drawer Close Icon -->
+        <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
       </div>
 
       <!-- Demo Simulation Mode Toggle -->
@@ -91,7 +101,7 @@
       <div class="p-4 border-t border-slate-800 bg-slate-950/40 text-xs font-mono text-slate-400">
         <div class="flex items-center space-x-2">
           <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-          <span>ESP32 Telemetry Active</span>
+          <span>ESP32 Telemetry Ready</span>
         </div>
       </div>
     </aside>
@@ -101,23 +111,30 @@
       
       <!-- Top Header Bar -->
       <header class="app-header">
-        <div>
-          <h2 class="text-sm font-semibold text-slate-100 flex items-center gap-2">
-            <span>Welcome, Chief Operator</span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-mono">
-              ADMIN
-            </span>
-          </h2>
-          <p class="text-xs text-slate-400 font-mono mt-0.5">
-            <span id="header-date">2026-08-02</span>
-            <span id="header-clock" class="text-cyan-400 font-bold ml-2">13:18:00</span>
-          </p>
+        <div class="flex items-center space-x-3">
+          <!-- Mobile Sidebar Toggle Button -->
+          <button id="btn-toggle-sidebar" class="lg:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+
+          <div>
+            <h2 class="text-sm font-semibold text-slate-100 flex items-center gap-2">
+              <span>Welcome, Chief Operator</span>
+              <span class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-mono">
+                ADMIN
+              </span>
+            </h2>
+            <p class="text-xs text-slate-400 font-mono mt-0.5">
+              <span id="header-date">2026-08-02</span>
+              <span id="header-clock" class="text-cyan-400 font-bold ml-2">13:26:00</span>
+            </p>
+          </div>
         </div>
 
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-3">
           <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
             <span id="system-status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 status-dot-pulse"></span>
-            <span id="system-status-text">SYSTEM ONLINE</span>
+            <span id="system-status-text">STANDBY</span>
           </div>
 
           <!-- Alert Notifications Dropdown Button -->
@@ -141,7 +158,7 @@
 
           <button data-action="export-csv" class="btn btn-cyan">
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            <span>Export CSV</span>
+            <span class="hidden sm:inline">Export CSV</span>
           </button>
         </div>
       </header>
@@ -171,7 +188,7 @@
         </div>
 
         <span id="simulation-last-action" class="text-[11px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 hidden">
-          Simulation Initialized
+          Simulation Engine Active
         </span>
       </div>
 
@@ -181,41 +198,41 @@
         <!-- DASHBOARD VIEW -->
         <section id="view-dashboard" class="view-section active space-y-6">
           <!-- KPI Metrics Cards Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             <div class="glass-card p-4">
               <span class="text-[11px] font-semibold text-slate-400 block">TOTAL POTHOLES</span>
-              <span id="kpi-potholes" class="text-3xl font-extrabold text-red-400 font-mono mt-1 block">0</span>
+              <span id="kpi-potholes" class="text-2xl sm:text-3xl font-extrabold text-red-400 font-mono mt-1 block">0</span>
               <span class="text-[10px] text-slate-400 mt-1 block">Detected road cavities</span>
             </div>
 
             <div class="glass-card p-4">
               <span class="text-[11px] font-semibold text-slate-400 block">TOTAL BUMPS</span>
-              <span id="kpi-bumps" class="text-3xl font-extrabold text-amber-400 font-mono mt-1 block">0</span>
+              <span id="kpi-bumps" class="text-2xl sm:text-3xl font-extrabold text-amber-400 font-mono mt-1 block">0</span>
               <span class="text-[10px] text-slate-400 mt-1 block">Road elevations</span>
             </div>
 
             <div class="glass-card p-4">
               <span class="text-[11px] font-semibold text-slate-400 block">TODAY'S LOGS</span>
-              <span id="kpi-todays" class="text-3xl font-extrabold text-cyan-400 font-mono mt-1 block">0</span>
+              <span id="kpi-todays" class="text-2xl sm:text-3xl font-extrabold text-cyan-400 font-mono mt-1 block">0</span>
               <span class="text-[10px] text-slate-400 mt-1 block">Recorded last 24h</span>
             </div>
 
             <div class="glass-card p-4">
               <span class="text-[11px] font-semibold text-slate-400 block">CRITICAL HAZARDS</span>
-              <span id="kpi-critical" class="text-3xl font-extrabold text-purple-400 font-mono mt-1 block">0</span>
+              <span id="kpi-critical" class="text-2xl sm:text-3xl font-extrabold text-purple-400 font-mono mt-1 block">0</span>
               <span class="text-[10px] text-slate-400 mt-1 block">High severity potholes</span>
             </div>
 
             <div class="glass-card p-4">
               <span class="text-[11px] font-semibold text-slate-400 block">ACTIVE DEVICES</span>
-              <span id="kpi-devices" class="text-3xl font-extrabold text-emerald-400 font-mono mt-1 block">0</span>
+              <span id="kpi-devices" class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono mt-1 block">0</span>
               <span class="text-[10px] text-slate-400 mt-1 block">ESP32 units online</span>
             </div>
 
             <div class="glass-card p-4">
               <span class="text-[11px] font-semibold text-slate-400 block">SYSTEM STATUS</span>
-              <span id="kpi-status" class="text-3xl font-extrabold text-cyan-400 font-mono mt-1 block">ONLINE</span>
-              <span class="text-[10px] text-slate-400 mt-1 block">Stream active</span>
+              <span id="kpi-status" class="text-2xl sm:text-3xl font-extrabold text-cyan-400 font-mono mt-1 block">STANDBY</span>
+              <span class="text-[10px] text-slate-400 mt-1 block">Stream status</span>
             </div>
           </div>
 
