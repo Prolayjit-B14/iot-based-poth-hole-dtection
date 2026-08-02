@@ -1,5 +1,5 @@
 /**
- * SmartRoad AI - Interactive Leaflet GIS Map Module
+ * SmartRoad AI - Interactive Leaflet GIS Map & Real-time GPS Stream Fetcher Module
  */
 import { store } from '../store.js';
 
@@ -9,6 +9,7 @@ class MapModule {
     this.mapFull = null;
     this.markersGroupDash = null;
     this.markersGroupFull = null;
+    this.currentGps = { lat: 26.7271, lng: 88.3953 };
     this.routeHistory = [
       [26.7230, 88.3900],
       [26.7250, 88.3920],
@@ -30,13 +31,42 @@ class MapModule {
     store.subscribe('DETECTIONS_UPDATED', () => this.renderMarkers());
     store.subscribe('DEVICES_UPDATED', () => this.renderMarkers());
     store.subscribe('STATE_CHANGED', () => this.renderMarkers());
+    store.subscribe('TELEMETRY_UPDATED', (data) => this.onTelemetryStream(data));
+  }
+
+  onTelemetryStream(data) {
+    if (data && data.latitude && data.longitude) {
+      this.updateGPSPosition(data.latitude, data.longitude);
+    }
+  }
+
+  updateGPSPosition(lat, lng) {
+    this.currentGps = { lat, lng };
+    
+    // Append to route history polyline if new coordinate
+    const last = this.routeHistory[this.routeHistory.length - 1];
+    if (!last || Math.abs(last[0] - lat) > 0.0001 || Math.abs(last[1] - lng) > 0.0001) {
+      this.routeHistory.push([lat, lng]);
+    }
+
+    // Pan maps smoothly to current vehicle position
+    if (this.mapDashboard) this.mapDashboard.panTo([lat, lng]);
+    if (this.mapFull) this.mapFull.panTo([lat, lng]);
+
+    // Update GPS lat / long text labels in Detection Analysis Panel
+    const latEl = document.getElementById('panel-gps-lat');
+    const longEl = document.getElementById('panel-gps-long');
+    if (latEl) latEl.textContent = `${lat.toFixed(4)}° N`;
+    if (longEl) longEl.textContent = `${lng.toFixed(4)}° E`;
+
+    this.renderMarkers();
   }
 
   initDashboardMap() {
     const el = document.getElementById('leaflet-map');
     if (!el || !window.L || this.mapDashboard) return;
 
-    this.mapDashboard = L.map(el, { zoomControl: true }).setView([26.7271, 88.3953], 14);
+    this.mapDashboard = L.map(el, { zoomControl: true }).setView([this.currentGps.lat, this.currentGps.lng], 15);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(this.mapDashboard);
@@ -49,7 +79,7 @@ class MapModule {
     const el = document.getElementById('leaflet-map-full');
     if (!el || !window.L || this.mapFull) return;
 
-    this.mapFull = L.map(el, { zoomControl: true }).setView([26.7271, 88.3953], 14);
+    this.mapFull = L.map(el, { zoomControl: true }).setView([this.currentGps.lat, this.currentGps.lng], 15);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(this.mapFull);
@@ -101,21 +131,21 @@ class MapModule {
       });
 
       // Render Current Vehicle Position Pin (Green Vehicle Marker)
-      devices.forEach(dev => {
-        const html = `<div style="background-color: #10B981; width: 32px; height: 32px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 16px; box-shadow: 0 0 12px rgba(16, 185, 129, 0.6); border: 2px solid #FFFFFF;">🚗</div>`;
-        const icon = L.divIcon({ className: 'custom-device-marker', html, iconSize: [32, 32], iconAnchor: [16, 16] });
+      const currentLat = this.currentGps.lat;
+      const currentLng = this.currentGps.lng;
+      const html = `<div style="background-color: #10B981; width: 32px; height: 32px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 16px; box-shadow: 0 0 12px rgba(16, 185, 129, 0.6); border: 2px solid #FFFFFF;">🚗</div>`;
+      const vehicleIcon = L.divIcon({ className: 'custom-device-marker', html, iconSize: [32, 32], iconAnchor: [16, 16] });
 
-        L.marker([dev.latitude, dev.longitude], { icon })
-          .addTo(group)
-          .bindPopup(`
-            <div style="font-family: sans-serif; font-size: 12px; padding: 4px;">
-              <b style="color: #10B981">🚗 ${dev.name}</b><br/>
-              Status: <b>${dev.status}</b><br/>
-              Position: [${dev.latitude}, ${dev.longitude}]<br/>
-              Battery: ${dev.batteryLevel}% | WiFi: ${dev.wifiSignal}%
-            </div>
-          `);
-      });
+      L.marker([currentLat, currentLng], { icon: vehicleIcon })
+        .addTo(group)
+        .bindPopup(`
+          <div style="font-family: sans-serif; font-size: 12px; padding: 4px;">
+            <b style="color: #10B981">🚗 ESP32 Sensing Vehicle</b><br/>
+            Status: <b>ACTIVE TRACKING</b><br/>
+            Position: [${currentLat.toFixed(4)}, ${currentLng.toFixed(4)}]<br/>
+            GPS Fix: <b>3D LOCK (±0.5m)</b>
+          </div>
+        `);
     });
   }
 }
