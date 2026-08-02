@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SmartRoad AI - Dual Ultrasonic & ESP32-CAM Pothole Detection System</title>
-  <meta name="description" content="Monitor road conditions in real time using ESP32, dual ultrasonic sensing, GPS location tracking, live camera feed, SMTP email alerts, and AI cloud monitoring." />
+  <title>SmartRoad AI - Infrastructure Management System</title>
+  <meta name="description" content="Enterprise IoT Smart Road Infrastructure Monitoring System for Municipalities and Transportation Authorities." />
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts (Inter & JetBrains Mono) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN for Utility Classes -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,51 +18,40 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
+  <!-- Chart.js CDN for Enterprise Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Application Unified CSS Design System -->
+  <!-- Enterprise Application CSS Design System -->
   <link rel="stylesheet" href="./css/style.css" />
 </head>
-<body class="bg-[#070A12] text-slate-100 font-sans antialiased">
+<body class="bg-[#0F172A] text-slate-100 font-sans antialiased">
   <div class="app-container">
     
-    <!-- Mobile Navigation Sidebar Backdrop -->
+    <!-- Mobile Sidebar Backdrop -->
     <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
-    <!-- Sidebar Navigation Drawer -->
+    <!-- Enterprise Navigation Sidebar -->
     <aside id="app-sidebar" class="app-sidebar select-none">
       <div class="sidebar-header">
         <div class="flex items-center space-x-3">
-          <div class="p-2.5 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-500 shadow-glow-cyan">
-            <i data-lucide="radio" class="w-6 h-6 text-white animate-pulse"></i>
+          <div class="sidebar-brand-logo p-2 rounded-lg bg-blue-600">
+            <i data-lucide="shield" class="w-5 h-5 text-white"></i>
           </div>
-          <div>
-            <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent font-display">
-              SmartRoad <span class="text-cyan-400">AI</span>
-            </h1>
-            <p class="text-[10px] uppercase font-mono tracking-widest text-cyan-400 font-semibold">Dual Ultrasonic IoT</p>
+          <div class="sidebar-brand-text">
+            <h1 class="font-bold text-base text-white">SmartRoad <span class="text-blue-400">AI</span></h1>
+            <p class="text-[11px] text-slate-400 font-mono">Infrastructure System</p>
           </div>
         </div>
         
-        <!-- Mobile Drawer Close Icon -->
-        <button id="btn-close-sidebar" class="lg:hidden text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button id="btn-toggle-sidebar" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors" title="Toggle Sidebar">
+          <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <!-- Demo Simulation Mode Toggle -->
-      <div class="mx-4 my-3 p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <span id="demo-status-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-400 status-dot-pulse"></span>
-          <span class="text-xs font-medium text-slate-300">Demo Simulation</span>
-        </div>
-        <button id="btn-toggle-demo" class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors bg-cyan-500">
-          <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white transition translate-x-4"></span>
-        </button>
-      </div>
-
-      <!-- Navigation Links -->
+      <!-- Sidebar Navigation Links -->
       <nav class="sidebar-nav">
         <button data-view-target="dashboard" class="nav-link active">
           <i data-lucide="layout-dashboard"></i>
@@ -88,9 +77,17 @@
           <i data-lucide="cpu"></i>
           <span>IoT Devices</span>
         </button>
+        <button data-view-target="analytics" class="nav-link">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Analytics</span>
+        </button>
         <button data-view-target="alerts" class="nav-link">
           <i data-lucide="bell"></i>
           <span>Alerts</span>
+        </button>
+        <button data-view-target="reports" class="nav-link">
+          <i data-lucide="file-text"></i>
+          <span>Reports</span>
         </button>
         <button data-view-target="settings" class="nav-link">
           <i data-lucide="settings"></i>
@@ -98,196 +95,426 @@
         </button>
       </nav>
 
-      <div class="p-4 border-t border-slate-800 bg-slate-950/40 text-xs font-mono text-slate-400">
-        <div class="flex items-center space-x-2">
-          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-          <span>Dual Sensors & GPS Active</span>
-        </div>
-      </div>
     </aside>
 
     <!-- Main Content Area -->
     <div class="app-main">
       
-      <!-- Top Header Bar -->
+      <!-- Top Enterprise Header -->
       <header class="app-header">
         <div class="flex items-center space-x-3">
-          <!-- Mobile Sidebar Toggle Button -->
-          <button id="btn-toggle-sidebar" class="lg:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white">
-            <i data-lucide="menu" class="w-5 h-5"></i>
-          </button>
-
-          <div>
-            <h2 class="text-sm font-semibold text-slate-100 flex items-center gap-2">
-              <span>Welcome, Chief Operator</span>
-              <span class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-mono">
-                ADMIN
-              </span>
-            </h2>
-            <p class="text-xs text-slate-400 font-mono mt-0.5">
-              <span id="header-date">2026-08-02</span>
-              <span id="header-clock" class="text-cyan-400 font-bold ml-2">13:29:00</span>
-            </p>
+          <!-- Search Bar -->
+          <div class="relative hidden sm:block">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+            <input type="text" placeholder="Search locations, devices, hazards..." class="search-input" />
           </div>
         </div>
 
-        <div class="flex items-center space-x-3">
-          <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
-            <span id="system-status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 status-dot-pulse"></span>
-            <span id="system-status-text">STANDBY</span>
-          </div>
-
-          <!-- Alert Notifications Dropdown Button -->
+        <div class="flex items-center space-x-4">
+          <!-- Alert Notifications Dropdown -->
           <div class="relative">
-            <button id="btn-toggle-alerts" class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white relative">
+            <button id="btn-toggle-alerts" class="p-2 rounded-lg bg-[#111827] border border-[#334155] text-slate-300 hover:text-white relative">
               <i data-lucide="bell" class="w-4 h-4"></i>
-              <span id="alert-count-badge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white font-mono text-[9px] font-bold flex items-center justify-center hidden">0</span>
+              <span id="alert-count-badge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-600 text-white font-mono text-[9px] font-bold flex items-center justify-center hidden">0</span>
             </button>
 
             <!-- Alerts Popover List -->
-            <div id="alert-popover" class="hidden absolute right-0 mt-2 w-80 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
-              <div class="p-3 border-b border-slate-800 flex justify-between items-center bg-slate-950">
-                <span class="font-bold text-xs text-slate-200">System Notifications</span>
-                <button id="btn-mark-all-read" class="text-[10px] text-cyan-400 hover:underline font-mono">Mark all read</button>
+            <div id="alert-popover" class="hidden absolute right-0 mt-2 w-80 bg-[#111827] border border-[#334155] rounded-lg shadow-2xl z-50 overflow-hidden">
+              <div class="p-3 border-b border-[#334155] flex justify-between items-center bg-[#1E293B]">
+                <span class="font-semibold text-xs text-white">Notifications</span>
+                <button id="btn-mark-all-read" class="text-[10px] text-blue-400 hover:underline font-mono">Mark all read</button>
               </div>
-              <div id="alert-list-container" class="max-h-64 overflow-y-auto divide-y divide-slate-800">
+              <div id="alert-list-container" class="max-h-64 overflow-y-auto divide-y divide-[#334155]">
                 <!-- Dynamically Rendered Alerts -->
               </div>
             </div>
           </div>
 
-          <button data-action="export-csv" class="btn btn-cyan">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            <span class="hidden sm:inline">Export CSV</span>
+          <button data-action="export-csv" class="btn btn-primary" title="Export CSV">
+            <i data-lucide="download" class="w-4 h-4"></i>
           </button>
+
+          <!-- User Profile Avatar Badge -->
+          <div class="relative">
+            <button data-view-target="profile" class="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center border border-blue-400/40 relative shadow-sm" title="Operator Profile">
+              CO
+              <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[#111827]"></span>
+            </button>
+          </div>
         </div>
       </header>
 
-      <!-- Demo Simulation Bar -->
-      <div id="demo-simulation-bar" class="demo-bar">
-        <div class="flex items-center space-x-2">
-          <i data-lucide="zap" class="w-4 h-4 text-cyan-400 animate-bounce"></i>
-          <span class="font-bold text-slate-100">Live Hardware Simulation Engine</span>
-        </div>
-
-        <div class="flex items-center space-x-2">
-          <button id="btn-sim-pothole" class="btn btn-danger-outline">
-            <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
-            <span>Simulate Pothole</span>
-          </button>
-
-          <button id="btn-sim-bump" class="btn btn-warning-outline">
-            <i data-lucide="activity" class="w-3.5 h-3.5"></i>
-            <span>Simulate Road Bump</span>
-          </button>
-
-          <button id="btn-sim-gps" class="btn btn-cyan-outline">
-            <i data-lucide="navigation" class="w-3.5 h-3.5"></i>
-            <span>Move GPS</span>
-          </button>
-        </div>
-
-        <span id="simulation-last-action" class="text-[11px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 hidden">
-          Simulation Engine Active
-        </span>
-      </div>
-
-      <!-- Main View Sections Container -->
+      <!-- Main View Content Area -->
       <main class="content-viewport">
 
         <!-- DASHBOARD VIEW -->
         <section id="view-dashboard" class="view-section active space-y-6">
-          <!-- KPI Metrics Cards Grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            <div class="glass-card p-4">
-              <span class="text-[11px] font-semibold text-slate-400 block">TOTAL POTHOLES</span>
-              <span id="kpi-potholes" class="text-2xl sm:text-3xl font-extrabold text-red-400 font-mono mt-1 block">0</span>
-              <span class="text-[10px] text-slate-400 mt-1 block">Detected road cavities</span>
+
+          <!-- Final Dashboard KPI Cards (12 Cards - 3 Rows of 4 Cards) -->
+          <div class="kpi-grid-12">
+            
+            <!-- Row 1: Road Monitoring -->
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">Total Potholes</span>
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+              </div>
+              <div id="kpi-potholes" class="metric-value text-red-500 my-1">0</div>
             </div>
 
-            <div class="glass-card p-4">
-              <span class="text-[11px] font-semibold text-slate-400 block">TOTAL BUMPS</span>
-              <span id="kpi-bumps" class="text-2xl sm:text-3xl font-extrabold text-amber-400 font-mono mt-1 block">0</span>
-              <span class="text-[10px] text-slate-400 mt-1 block">Road elevations</span>
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">Road Bumps</span>
+                <i data-lucide="activity" class="w-4 h-4 text-amber-500"></i>
+              </div>
+              <div id="kpi-bumps" class="metric-value text-amber-500 my-1">0</div>
             </div>
 
-            <div class="glass-card p-4">
-              <span class="text-[11px] font-semibold text-slate-400 block">TODAY'S LOGS</span>
-              <span id="kpi-todays" class="text-2xl sm:text-3xl font-extrabold text-cyan-400 font-mono mt-1 block">0</span>
-              <span class="text-[10px] text-slate-400 mt-1 block">Recorded last 24h</span>
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">Critical Hazards</span>
+                <i data-lucide="shield-alert" class="w-4 h-4 text-purple-500"></i>
+              </div>
+              <div id="kpi-critical" class="metric-value text-purple-400 my-1">0</div>
             </div>
 
-            <div class="glass-card p-4">
-              <span class="text-[11px] font-semibold text-slate-400 block">CRITICAL HAZARDS</span>
-              <span id="kpi-critical" class="text-2xl sm:text-3xl font-extrabold text-purple-400 font-mono mt-1 block">0</span>
-              <span class="text-[10px] text-slate-400 mt-1 block">High severity potholes</span>
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">Today's Detections</span>
+                <i data-lucide="calendar" class="w-4 h-4 text-blue-400"></i>
+              </div>
+              <div id="kpi-todays" class="metric-value text-blue-400 my-1">0</div>
             </div>
 
-            <div class="glass-card p-4">
-              <span class="text-[11px] font-semibold text-slate-400 block">ACTIVE DEVICES</span>
-              <span id="kpi-devices" class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono mt-1 block">0</span>
-              <span class="text-[10px] text-slate-400 mt-1 block">ESP32 units online</span>
+            <!-- Row 2: Device & Sensor Status -->
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">Active Devices</span>
+                <i data-lucide="cpu" class="w-4 h-4 text-emerald-500"></i>
+              </div>
+              <div id="kpi-devices" class="metric-value text-emerald-400 my-1">0</div>
             </div>
 
-            <div class="glass-card p-4">
-              <span class="text-[11px] font-semibold text-slate-400 block">SYSTEM STATUS</span>
-              <span id="kpi-status" class="text-2xl sm:text-3xl font-extrabold text-cyan-400 font-mono mt-1 block">STANDBY</span>
-              <span class="text-[10px] text-slate-400 mt-1 block">Stream status</span>
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">Sensor Health</span>
+                <i data-lucide="heart-pulse" class="w-4 h-4 text-cyan-400"></i>
+              </div>
+              <div id="kpi-sensor-health" class="metric-value text-cyan-400 my-1">100%</div>
             </div>
+
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">GPS Status</span>
+                <i data-lucide="navigation" class="w-4 h-4 text-blue-400"></i>
+              </div>
+              <div id="kpi-gps-status" class="metric-value text-blue-400 my-1">3D LOCK</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">Detection Accuracy</span>
+                <i data-lucide="target" class="w-4 h-4 text-emerald-400"></i>
+              </div>
+              <div id="kpi-accuracy" class="metric-value text-emerald-400 my-1">98.4%</div>
+            </div>
+
+            <!-- Row 3: System & Connectivity -->
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">MQTT Connection</span>
+                <i data-lucide="wifi" class="w-4 h-4 text-cyan-400"></i>
+              </div>
+              <div id="kpi-mqtt" class="metric-value text-cyan-400 my-1">ONLINE</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">Cloud Sync</span>
+                <i data-lucide="cloud" class="w-4 h-4 text-blue-400"></i>
+              </div>
+              <div id="kpi-cloud" class="metric-value text-blue-400 my-1">REALTIME</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">System Health</span>
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+              </div>
+              <div id="kpi-sys-health" class="metric-value text-emerald-400 my-1">OPTIMAL</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="flex justify-between items-center text-slate-400">
+                <span class="caption-text uppercase font-semibold">System Uptime</span>
+                <i data-lucide="clock" class="w-4 h-4 text-purple-400"></i>
+              </div>
+              <div id="kpi-uptime" class="metric-value text-purple-400 my-1">99.98%</div>
+            </div>
+
           </div>
 
-          <!-- Telemetry & Leaflet GIS Map Grid -->
+          <!-- 2-Column Grid Layout: Live Telemetry & Live Road Map (Matching Reference Layout) -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="glass-card p-5 space-y-3">
-              <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
-                  <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
-                  Dual Ultrasonic Telemetry Array
-                </h3>
-                <span id="telemetry-status-text" class="text-xs font-mono text-emerald-400 font-bold">Signal Normal</span>
+            
+            <!-- Left Card: Live Telemetry - Dual Ultrasonic Sensors -->
+            <div class="card space-y-4">
+              <div class="flex justify-between items-center border-b border-[#334155] pb-3">
+                <h3 class="card-title text-base">Live Telemetry - Dual Ultrasonic Sensors</h3>
+                <span class="status-badge badge-success flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live
+                </span>
               </div>
-              <div class="h-64 bg-slate-950/80 rounded-xl border border-slate-800 p-4 flex flex-col justify-between">
-                <div class="flex justify-between text-xs font-mono text-slate-400">
-                  <span>Surface Baseline: 32.4 cm</span>
-                  <span class="text-cyan-400">2x HC-SR04 Sensors</span>
+
+              <!-- Row 1: The Two Ultrasonic Sensor Cards -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-3.5 rounded-xl bg-[#111827] border border-[#334155] space-y-1">
+                  <span class="text-xs font-semibold text-slate-300 block">Sensor 1 (Left Track)</span>
+                  <span id="telemetry-sensor1-val" class="metric-value text-blue-500 block text-2xl sm:text-3xl">32.4 cm</span>
+                  <span class="text-[11px] text-emerald-400 font-medium flex items-center gap-1">● Signal: Good</span>
                 </div>
-                <div class="grid grid-cols-2 gap-4 py-4">
-                  <div class="text-center p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                    <span class="text-[10px] text-slate-400 font-mono block">SENSOR 1 (LEFT TRACK)</span>
-                    <span id="telemetry-sensor1-val" class="text-3xl font-extrabold text-cyan-400 font-mono glow-text-cyan mt-1 block">32.4 cm</span>
-                  </div>
-                  <div class="text-center p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                    <span class="text-[10px] text-slate-400 font-mono block">SENSOR 2 (RIGHT TRACK)</span>
-                    <span id="telemetry-sensor2-val" class="text-3xl font-extrabold text-cyan-400 font-mono glow-text-cyan mt-1 block">32.4 cm</span>
-                  </div>
+
+                <div class="p-3.5 rounded-xl bg-[#111827] border border-[#334155] space-y-1">
+                  <span class="text-xs font-semibold text-slate-300 block">Sensor 2 (Right Track)</span>
+                  <span id="telemetry-sensor2-val" class="metric-value text-blue-500 block text-2xl sm:text-3xl">32.4 cm</span>
+                  <span class="text-[11px] text-emerald-400 font-medium flex items-center gap-1">● Signal: Good</span>
                 </div>
-                <div class="flex justify-between text-[11px] font-mono text-slate-500">
-                  <span>Pothole Threshold: &gt; 45 cm</span>
-                  <span>Bump Threshold: &lt; 20 cm</span>
+              </div>
+
+              <!-- Row 2: Telemetry Parameters Details Card -->
+              <div class="p-3.5 rounded-xl bg-[#111827]/80 border border-[#334155] grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                <div class="space-y-0.5">
+                  <span class="text-slate-400 block text-[11px]">Surface Baseline</span>
+                  <span class="text-white font-bold text-sm">32.4 cm</span>
+                </div>
+                <div class="space-y-0.5">
+                  <span class="text-slate-400 block text-[11px]">Pothole Threshold</span>
+                  <span class="text-red-400 font-bold text-sm">&gt; 45 cm</span>
+                </div>
+                <div class="space-y-0.5">
+                  <span class="text-slate-400 block text-[11px]">Bump Threshold</span>
+                  <span class="text-amber-400 font-bold text-sm">&lt; 20 cm</span>
+                </div>
+                <div class="space-y-0.5">
+                  <span class="text-slate-400 block text-[11px]">Last Updated</span>
+                  <span id="telemetry-last-updated" class="text-slate-200 font-bold text-sm">01:31:02 PM</span>
+                </div>
+              </div>
+
+              <!-- Lower Section: Distance Over Time Chart -->
+              <div class="space-y-2 pt-2 border-t border-[#334155]">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-semibold text-slate-200">Distance Over Time</span>
+                  <select class="bg-[#111827] border border-[#334155] rounded-md px-2 py-1 text-[11px] text-slate-300 focus:outline-none">
+                    <option>Last 5 Minutes</option>
+                    <option>Last 15 Minutes</option>
+                    <option>Last 1 Hour</option>
+                  </select>
+                </div>
+                <div class="h-44 w-full">
+                  <canvas id="dashboard-telemetry-chart"></canvas>
                 </div>
               </div>
             </div>
 
-            <!-- Leaflet GIS Map Container -->
-            <div class="glass-card p-5 space-y-3">
-              <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
-                  <i data-lucide="map-pin" class="w-4 h-4 text-cyan-400"></i>
-                  Live Geographic Pothole Map
-                </h3>
-                <button data-view-target="map" class="text-xs text-cyan-400 hover:underline">Full View →</button>
+            <!-- Right Card: Detection Analysis Panel -->
+            <div class="card space-y-4">
+              <div class="flex justify-between items-center border-b border-[#334155] pb-3">
+                <h3 class="card-title text-base">Detection Analysis</h3>
+                <span class="status-badge badge-info font-mono text-[11px]">LIVE AI STREAM</span>
               </div>
-              <div id="leaflet-map" class="h-64 rounded-xl border border-slate-800"></div>
+
+              <!-- Recommended Action Card (Colored Status Banner) -->
+              <div id="panel-action-card" class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/50 flex items-center justify-between text-xs font-mono">
+                <span class="text-slate-300 font-medium">Recommended Action:</span>
+                <span id="panel-action-text" class="font-bold text-emerald-400 flex items-center gap-1.5">
+                  ✓ Continue Monitoring
+                </span>
+              </div>
+
+              <!-- Section 1: Road Status -->
+              <div class="space-y-2">
+                <span class="text-[11px] uppercase tracking-wider text-slate-400 font-mono font-bold block border-b border-[#334155]/60 pb-1">Road Status</span>
+                <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Road Condition:</span>
+                    <span id="panel-condition" class="font-bold text-emerald-400">CLEAR</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Detection Type:</span>
+                    <span id="panel-type" class="font-bold text-white">NORMAL</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Severity Level:</span>
+                    <span id="panel-severity" class="font-bold text-slate-400">NONE</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">AI Confidence:</span>
+                    <span id="panel-confidence" class="font-bold text-blue-400">96.8%</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Processing Time:</span>
+                    <span id="panel-time" class="font-bold text-white">12 ms</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Hazard Category:</span>
+                    <span id="panel-category" class="font-bold text-cyan-400">CLASS 0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section 2: Detection Measurements -->
+              <div class="space-y-2">
+                <span class="text-[11px] uppercase tracking-wider text-slate-400 font-mono font-bold block border-b border-[#334155]/60 pb-1">Detection Measurements</span>
+                <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Max Depth:</span>
+                    <span id="panel-max-depth" class="font-bold text-slate-200">32.4 cm</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Est. Width:</span>
+                    <span id="panel-width" class="font-bold text-slate-200">35.0 cm</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Est. Length:</span>
+                    <span id="panel-length" class="font-bold text-slate-200">42.0 cm</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Surface Dev:</span>
+                    <span id="panel-dev" class="font-bold text-slate-200">0.0 cm</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section 3: GPS & Sensor Telemetry -->
+              <div class="space-y-2">
+                <span class="text-[11px] uppercase tracking-wider text-slate-400 font-mono font-bold block border-b border-[#334155]/60 pb-1">GPS & Sensor Telemetry</span>
+                <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">GPS Lat:</span>
+                    <span id="panel-gps-lat" class="font-bold text-blue-400">26.7271° N</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">GPS Long:</span>
+                    <span id="panel-gps-long" class="font-bold text-blue-400">88.3953° E</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">GPS Accuracy:</span>
+                    <span id="panel-gps-acc" class="font-bold text-emerald-400">±0.5m 3D Fix</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Sensor Diff:</span>
+                    <span id="panel-sensor-diff" class="font-bold text-slate-200">0.0 cm</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Left Ultrasonic Sensor:</span>
+                    <span id="panel-sensor-l" class="font-bold text-slate-200">32.4 cm</span>
+                  </div>
+                  <div class="p-2 rounded bg-[#111827] border border-[#334155] flex justify-between">
+                    <span class="text-slate-400">Right Ultrasonic Sensor:</span>
+                    <span id="panel-sensor-r" class="font-bold text-slate-200">32.4 cm</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section 4: Detection Summary -->
+              <div class="p-3 rounded-xl bg-[#111827] border border-[#334155] space-y-2 text-xs font-mono">
+                <div class="flex justify-between border-b border-[#334155]/60 pb-1 font-bold text-slate-200">
+                  <span>Detection Summary</span>
+                  <span class="text-emerald-400">STATUS OK</span>
+                </div>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-slate-400">
+                  <div class="flex justify-between"><span>Risk Level:</span> <b id="summary-risk" class="text-emerald-400">LOW</b></div>
+                  <div class="flex justify-between"><span>Confidence:</span> <b id="summary-conf" class="text-blue-400">96.8%</b></div>
+                  <div class="flex justify-between"><span>GPS Status:</span> <b class="text-emerald-400">ACTIVE</b></div>
+                  <div class="flex justify-between"><span>Cloud Status:</span> <b class="text-blue-400">SYNCED</b></div>
+                </div>
+              </div>
+
             </div>
+
           </div>
 
-          <!-- Hazard Activity Feed Table -->
-          <div class="glass-card p-5 space-y-4">
-            <div class="flex justify-between items-center">
-              <h3 class="text-sm font-bold text-slate-100">Live Hazard Activity Log</h3>
-              <button data-view-target="history" class="text-xs text-cyan-400 hover:underline">View All →</button>
+          <!-- Side-by-Side Row 3: GPS Road Map View & ESP32-CAM Live Vision Feed View -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Left Card: Live GPS Road Map -->
+            <div class="card space-y-3 relative">
+              <div class="flex justify-between items-center border-b border-[#334155] pb-3">
+                <div class="flex items-center space-x-2">
+                  <i data-lucide="map-pin" class="w-4 h-4 text-blue-400"></i>
+                  <h3 class="card-title text-base">Live GPS Road Map</h3>
+                </div>
+                <span class="status-badge badge-success flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live GPS
+                </span>
+              </div>
+
+              <div class="relative rounded-xl overflow-hidden border border-[#334155]">
+                <div id="leaflet-map" class="h-72 w-full"></div>
+
+                <!-- Floating Top-Right Map Legend Box -->
+                <div class="absolute top-3 right-3 bg-[#111827]/95 backdrop-blur-md border border-[#334155] rounded-xl p-3 z-20 text-[11px] font-medium text-slate-200 space-y-1.5 shadow-lg select-none">
+                  <div class="flex items-center space-x-2">
+                    <span class="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[9px] font-bold">🚗</span>
+                    <span>Current Position</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span class="w-3.5 h-3.5 rounded bg-red-600 flex items-center justify-center text-white text-[9px] font-bold">▲</span>
+                    <span>Pothole</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span class="w-3.5 h-3.5 rounded bg-amber-500 flex items-center justify-center text-white text-[9px] font-bold">▲</span>
+                    <span>Road Bump</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span class="w-3.5 h-3.5 rounded bg-purple-600 flex items-center justify-center text-white text-[9px] font-bold">▲</span>
+                    <span>Critical Hazard</span>
+                  </div>
+                  <div class="flex items-center space-x-2 pt-1 border-t border-[#334155]">
+                    <span class="w-4 border-b-2 border-dashed border-blue-500"></span>
+                    <span>Route History</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
+            <!-- Right Card: ESP32-CAM Live Vision Feed View -->
+            <div class="card space-y-3">
+              <div class="flex justify-between items-center border-b border-[#334155] pb-3">
+                <div class="flex items-center space-x-2">
+                  <i data-lucide="video" class="w-4 h-4 text-red-500 animate-pulse"></i>
+                  <h3 class="card-title text-base">ESP32-CAM Live Vision Stream</h3>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="status-badge badge-danger flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-ping"></span> REC LIVE
+                  </span>
+                  <button id="btn-dash-capture-snapshot" class="btn btn-primary text-xs py-1 px-2.5">
+                    <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                    <span>Snapshot</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="h-72 w-full rounded-xl overflow-hidden relative bg-[#111827] border border-[#334155] group">
+                <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover" alt="ESP32-CAM Stream" />
+                <div class="absolute top-3 left-3 bg-[#111827]/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-[11px] font-mono text-blue-400 border border-[#334155] flex items-center space-x-2">
+                  <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                  <span class="text-white font-bold">OV2640 HD</span>
+                  <span class="text-slate-400">| 1280x720 30FPS</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Hazard Activity Table -->
+          <div class="card space-y-3">
+            <div class="flex justify-between items-center">
+              <h3 class="card-title">Recent Activity Feed</h3>
+              <button data-view-target="history" class="text-xs text-blue-400 hover:underline">View All →</button>
+            </div>
             <div class="table-container">
               <table>
                 <thead>
@@ -296,34 +523,26 @@
                     <th>Severity</th>
                     <th>Distance</th>
                     <th>Device</th>
-                    <th>GPS Location</th>
+                    <th>GPS Position</th>
                     <th>Time</th>
                   </tr>
                 </thead>
-                <tbody id="table-body-dash" class="divide-y divide-slate-800 font-mono">
+                <tbody id="table-body-dash" class="font-mono text-xs divide-y divide-[#334155]">
                   <!-- Dynamically populated -->
                 </tbody>
               </table>
             </div>
           </div>
+
         </section>
 
         <!-- LIVE TELEMETRY VIEW -->
         <section id="view-live" class="view-section space-y-6">
-          <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2 font-display">
-            <i data-lucide="activity" class="w-5 h-5 text-cyan-400"></i>
-            Dual Ultrasonic Telemetry Stream & Sensor Comparison
-          </h2>
-          <div class="glass-card p-6 space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
-              <div class="p-6 rounded-2xl bg-slate-950 border border-slate-800 text-center space-y-2">
-                <span class="text-xs text-slate-400 font-mono uppercase block">HC-SR04 Sensor 1 (Left Wheel Track)</span>
-                <span class="text-5xl font-extrabold text-cyan-400 font-mono glow-text-cyan block">32.4 cm</span>
-              </div>
-              <div class="p-6 rounded-2xl bg-slate-950 border border-slate-800 text-center space-y-2">
-                <span class="text-xs text-slate-400 font-mono uppercase block">HC-SR04 Sensor 2 (Right Wheel Track)</span>
-                <span class="text-5xl font-extrabold text-cyan-400 font-mono glow-text-cyan block">32.4 cm</span>
-              </div>
+          <h2 class="page-title">Live Sensor Telemetry Stream</h2>
+          <div class="card space-y-4">
+            <h3 class="card-title">Real-time Dual Ultrasonic Stream Graph</h3>
+            <div class="h-72 w-full">
+              <canvas id="telemetry-chart"></canvas>
             </div>
           </div>
         </section>
@@ -331,54 +550,44 @@
         <!-- LIVE CAMERA VIEW -->
         <section id="view-camera" class="view-section space-y-6">
           <div class="flex justify-between items-center">
-            <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2 font-display">
-              <i data-lucide="camera" class="w-5 h-5 text-cyan-400"></i>
-              ESP32-CAM Live Vision Feed & Snapshot Gallery
-            </h2>
-            <button id="btn-capture-snapshot" class="btn btn-cyan">
-              <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+            <h2 class="page-title">ESP32-CAM Live Vision Feed</h2>
+            <button id="btn-capture-snapshot" class="btn btn-primary">
+              <i data-lucide="camera" class="w-4 h-4"></i>
               <span>Capture Snapshot</span>
             </button>
           </div>
 
-          <div class="glass-card p-5 space-y-4">
-            <div class="aspect-video w-full rounded-xl overflow-hidden relative bg-slate-950 border border-slate-800">
-              <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover" alt="Camera Feed" />
-              <div class="absolute top-3 left-3 bg-slate-950/80 px-3 py-1.5 rounded text-[11px] font-mono text-cyan-400 border border-slate-800">
-                <span class="text-red-500 font-bold mr-2">● LIVE REC</span> RES: 1280x720 HD | FPS: 30
+          <div class="card space-y-4">
+            <div class="aspect-video w-full rounded-lg overflow-hidden relative bg-[#111827] border border-[#334155]">
+              <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover" alt="Live Stream" />
+              <div class="absolute top-3 left-3 bg-[#111827]/90 px-3 py-1.5 rounded text-xs font-mono text-blue-400 border border-[#334155]">
+                <span class="text-red-500 font-bold mr-2">● REC LIVE</span> 1280x720 HD | 30 FPS
               </div>
             </div>
           </div>
 
-          <h3 class="text-sm font-bold text-slate-200">Captured Hazard Snapshots</h3>
+          <h3 class="card-title">Captured Snapshot Gallery</h3>
           <div id="camera-gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Dynamically populated -->
           </div>
         </section>
 
-        <!-- FULL MAP VIEW -->
+        <!-- ROAD MAP VIEW -->
         <section id="view-map" class="view-section space-y-4">
-          <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2 font-display">
-            <i data-lucide="map-pin" class="w-5 h-5 text-cyan-400"></i>
-            Interactive Geographic Road Condition Map
-          </h2>
-          <div id="leaflet-map-full" class="h-[75vh] rounded-2xl border border-slate-800"></div>
+          <h2 class="page-title">Interactive GIS Hazard Map</h2>
+          <div id="leaflet-map-full" class="h-[75vh] rounded-lg border border-[#334155]"></div>
         </section>
 
-        <!-- HISTORY AUDIT LOG VIEW -->
+        <!-- HISTORY VIEW -->
         <section id="view-history" class="view-section space-y-4">
           <div class="flex justify-between items-center">
-            <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2 font-display">
-              <i data-lucide="history" class="w-5 h-5 text-cyan-400"></i>
-              Detection Audit Log & History
-            </h2>
-            <button data-action="export-csv" class="btn btn-cyan">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>Export CSV</span>
+            <h2 class="page-title">Hazard Detection History Audit Log</h2>
+            <button data-action="export-csv" class="btn btn-primary" title="Export CSV">
+              <i data-lucide="download" class="w-4 h-4"></i>
             </button>
           </div>
 
-          <div class="glass-card p-5">
+          <div class="card">
             <div class="table-container">
               <table>
                 <thead>
@@ -386,12 +595,12 @@
                     <th>Type</th>
                     <th>Severity</th>
                     <th>Distance</th>
-                    <th>Device</th>
-                    <th>GPS Location</th>
-                    <th>Time</th>
+                    <th>Device ID</th>
+                    <th>GPS Coordinates</th>
+                    <th>Timestamp</th>
                   </tr>
                 </thead>
-                <tbody id="table-body-history" class="divide-y divide-slate-800 font-mono">
+                <tbody id="table-body-history" class="font-mono text-xs divide-y divide-[#334155]">
                   <!-- Dynamically populated -->
                 </tbody>
               </table>
@@ -401,70 +610,100 @@
 
         <!-- IOT DEVICES VIEW -->
         <section id="view-devices" class="view-section space-y-4">
-          <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2 font-display">
-            <i data-lucide="cpu" class="w-5 h-5 text-cyan-400"></i>
-            ESP32 Hardware Inventory & Sensor Health
-          </h2>
+          <h2 class="page-title">Connected IoT Hardware Inventory</h2>
           <div id="devices-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Dynamically populated -->
           </div>
         </section>
 
+        <!-- ANALYTICS VIEW -->
+        <section id="view-analytics" class="view-section space-y-6">
+          <h2 class="page-title">Road Infrastructure Analytics & Hazard Trends</h2>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="card lg:col-span-2 space-y-4">
+              <h3 class="card-title">Hazard Detections Frequency Trend</h3>
+              <div class="h-64">
+                <canvas id="analytics-trend-chart"></canvas>
+              </div>
+            </div>
+
+            <div class="card space-y-4">
+              <h3 class="card-title">Hazard Category Distribution</h3>
+              <div class="h-64">
+                <canvas id="analytics-doughnut-chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- ALERTS VIEW -->
         <section id="view-alerts" class="view-section space-y-4">
-          <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2 font-display">
-            <i data-lucide="bell" class="w-5 h-5 text-cyan-400"></i>
-            System Alert Logs & Emergency SMTP Notifications
-          </h2>
-          <div class="glass-card p-5">
-            <p class="text-xs text-slate-400 font-mono">Real-time alerts triggered by critical potholes or hardware status events.</p>
+          <h2 class="page-title">Alert Notifications & Emergency Email Log</h2>
+          <div class="card">
+            <p class="secondary-text">All critical hazard alerts and emergency SMTP email notifications sent to municipal authorities.</p>
+          </div>
+        </section>
+
+        <!-- REPORTS VIEW -->
+        <section id="view-reports" class="view-section space-y-4">
+          <h2 class="page-title">Infrastructure Maintenance Reports</h2>
+          <div class="card">
+            <p class="secondary-text">Automated PDF and CSV export generation for road repair crews and municipal planners.</p>
           </div>
         </section>
 
         <!-- SETTINGS VIEW -->
         <section id="view-settings" class="view-section space-y-6">
-          <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2 font-display">
-            <i data-lucide="settings" class="w-5 h-5 text-cyan-400"></i>
-            System Settings & SMTP Email Dispatcher Setup
-          </h2>
-          
+          <h2 class="page-title">System Configuration & Thresholds</h2>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Sensor Threshold Settings -->
-            <div class="glass-card p-6 space-y-4">
-              <h3 class="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2">Ultrasonic Sensor Thresholds</h3>
+            <div class="card space-y-4">
+              <h3 class="card-title border-b border-[#334155] pb-2">Ultrasonic Sensing Parameters</h3>
               <div class="space-y-1">
-                <label class="text-xs font-mono text-slate-300">Pothole Distance Threshold (cm)</label>
-                <input type="number" value="45" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-cyan-400 focus:outline-none focus:border-cyan-500" />
+                <label class="caption-text block">Pothole Distance Threshold (cm)</label>
+                <input type="number" value="45" class="search-input w-full" />
               </div>
               <div class="space-y-1">
-                <label class="text-xs font-mono text-slate-300">Road Bump Elevation Threshold (cm)</label>
-                <input type="number" value="20" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-amber-400 focus:outline-none focus:border-amber-500" />
+                <label class="caption-text block">Road Bump Elevation Threshold (cm)</label>
+                <input type="number" value="20" class="search-input w-full" />
               </div>
             </div>
 
-            <!-- SMTP Email Alert Settings -->
-            <div class="glass-card p-6 space-y-4">
-              <h3 class="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2 flex items-center justify-between">
-                <span>Emergency SMTP Email Alerts</span>
-                <span class="badge badge-online">SMTP READY</span>
-              </h3>
+            <div class="card space-y-4">
+              <h3 class="card-title border-b border-[#334155] pb-2">Emergency SMTP Email Setup</h3>
               <div class="space-y-1">
-                <label class="text-xs font-mono text-slate-300">SMTP Server Host</label>
-                <input type="text" value="smtp.gmail.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200" />
+                <label class="caption-text block">SMTP Host</label>
+                <input type="text" value="smtp.gmail.com" class="search-input w-full" />
               </div>
               <div class="space-y-1">
-                <label class="text-xs font-mono text-slate-300">Recipient Email (Municipal Officer)</label>
-                <input type="email" value="road_maintenance_admin@city.gov" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-cyan-400" />
+                <label class="caption-text block">Recipient Email</label>
+                <input type="email" value="road_maintenance_admin@city.gov" class="search-input w-full" />
               </div>
             </div>
           </div>
         </section>
 
       </main>
+
+      <!-- Minimal Enterprise Footer Bar -->
+      <footer class="app-footer bg-[#111827] border-t border-[#334155] px-6 py-2.5 text-xs text-slate-400 flex items-center justify-between font-mono select-none">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="shield" class="w-3.5 h-3.5 text-blue-400"></i>
+          <span class="text-white font-bold">SmartRoad AI v2.5.0</span>
+        </div>
+
+        <div class="flex items-center space-x-4">
+          <span class="flex items-center gap-1.5 text-emerald-400 font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> System Online
+          </span>
+          <span class="text-slate-500">|</span>
+          <span>Last Sync: <b id="footer-sync-time" class="text-slate-200">Just now</b></span>
+        </div>
+      </footer>
     </div>
   </div>
 
-  <!-- Detection Inspect Modal Dialog Overlay -->
+  <!-- Inspection Modal Dialog -->
   <div id="modal-overlay" class="modal-overlay">
     <div id="modal-card" class="modal-card">
       <div id="modal-content">

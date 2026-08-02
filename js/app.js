@@ -14,6 +14,7 @@ import { modalModule } from './modules/modal.js';
 import { alertsModule } from './modules/alerts.js';
 import { devicesModule } from './modules/devices.js';
 import { simulationModule } from './modules/simulation.js';
+import { analyticsModule } from './modules/analytics.js';
 
 class App {
   init() {
@@ -33,6 +34,7 @@ class App {
     alertsModule.init();
     devicesModule.init();
     simulationModule.init();
+    analyticsModule.init();
     mapModule.init();
 
     // 4. Handle View Change Triggers (e.g. Map Size Fixes & Mobile Drawer Closing)
@@ -66,10 +68,17 @@ class App {
     const openBtn = document.getElementById('btn-toggle-sidebar');
     const closeBtn = document.getElementById('btn-close-sidebar');
 
-    if (openBtn && sidebar && backdrop) {
+    if (openBtn && sidebar) {
       openBtn.addEventListener('click', () => {
-        sidebar.classList.add('open');
-        backdrop.classList.add('active');
+        if (window.innerWidth >= 1024) {
+          // Desktop mode: Toggle collapse mode (Full-width main viewport)
+          sidebar.classList.toggle('collapsed');
+          setTimeout(() => mapModule.invalidateSize(), 300);
+        } else {
+          // Mobile mode: Open drawer overlay
+          sidebar.classList.add('open');
+          if (backdrop) backdrop.classList.add('active');
+        }
       });
     }
 
@@ -105,20 +114,65 @@ class App {
 
   updateKPIs() {
     const stats = store.getStats();
+    const { detections } = store.getState();
 
     const potholesEl = document.getElementById('kpi-potholes');
     const bumpsEl = document.getElementById('kpi-bumps');
     const todaysEl = document.getElementById('kpi-todays');
     const criticalEl = document.getElementById('kpi-critical');
     const devicesEl = document.getElementById('kpi-devices');
-    const statusEl = document.getElementById('kpi-status');
+    const mqttEl = document.getElementById('kpi-mqtt');
 
     if (potholesEl) potholesEl.textContent = stats.totalPotholes;
     if (bumpsEl) bumpsEl.textContent = stats.totalBumps;
     if (todaysEl) todaysEl.textContent = stats.todayDetections;
     if (criticalEl) criticalEl.textContent = stats.criticalDetections;
     if (devicesEl) devicesEl.textContent = stats.activeDevices;
-    if (statusEl) statusEl.textContent = stats.systemStatus;
+    if (mqttEl) mqttEl.textContent = stats.systemStatus === 'ONLINE' ? 'ONLINE' : 'ACTIVE';
+
+    // Update Detection Analysis Panel with live detection state or clear state
+    const latest = detections[0];
+    const conditionEl = document.getElementById('panel-condition');
+    const typeEl = document.getElementById('panel-type');
+    const severityEl = document.getElementById('panel-severity');
+    const confEl = document.getElementById('panel-confidence');
+    const actionCardEl = document.getElementById('panel-action-card');
+    const actionTextEl = document.getElementById('panel-action-text');
+    const summaryRiskEl = document.getElementById('summary-risk');
+
+    const latEl = document.getElementById('panel-gps-lat');
+    const longEl = document.getElementById('panel-gps-long');
+
+    if (latest) {
+      if (latEl) latEl.textContent = `${latest.latitude}° N`;
+      if (longEl) longEl.textContent = `${latest.longitude}° E`;
+      if (conditionEl) {
+        conditionEl.textContent = latest.type === 'POTHOLE' ? 'HAZARD DETECTED' : 'ELEVATED SURFACE';
+        conditionEl.className = latest.type === 'POTHOLE' ? 'font-bold text-red-400' : 'font-bold text-amber-400';
+      }
+      if (typeEl) typeEl.textContent = latest.type;
+      if (severityEl) {
+        severityEl.textContent = latest.severity;
+        severityEl.className = latest.severity === 'CRITICAL' ? 'font-bold text-red-500' : 'font-bold text-amber-400';
+      }
+      if (confEl) confEl.textContent = `${latest.confidence}%`;
+      if (summaryRiskEl) {
+        summaryRiskEl.textContent = latest.severity === 'CRITICAL' ? 'HIGH' : 'MEDIUM';
+        summaryRiskEl.className = latest.severity === 'CRITICAL' ? 'text-red-400' : 'text-amber-400';
+      }
+
+      if (actionCardEl && actionTextEl) {
+        if (latest.type === 'POTHOLE') {
+          actionCardEl.className = 'p-3 rounded-xl bg-red-950/50 border border-red-800/60 flex items-center justify-between text-xs font-mono';
+          actionTextEl.className = 'font-bold text-red-400 flex items-center gap-1.5';
+          actionTextEl.textContent = '🚧 Road Maintenance Required';
+        } else {
+          actionCardEl.className = 'p-3 rounded-xl bg-amber-950/50 border border-amber-800/60 flex items-center justify-between text-xs font-mono';
+          actionTextEl.className = 'font-bold text-amber-400 flex items-center gap-1.5';
+          actionTextEl.textContent = '⚠ Reduce Vehicle Speed';
+        }
+      }
+    }
 
     this.refreshIcons();
   }

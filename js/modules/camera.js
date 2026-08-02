@@ -7,9 +7,14 @@ class CameraModule {
   init() {
     this.galleryEl = document.getElementById('camera-gallery');
     this.captureBtn = document.getElementById('btn-capture-snapshot');
+    this.dashCaptureBtn = document.getElementById('btn-dash-capture-snapshot');
 
     if (this.captureBtn) {
       this.captureBtn.addEventListener('click', () => this.captureSnapshot());
+    }
+
+    if (this.dashCaptureBtn) {
+      this.dashCaptureBtn.addEventListener('click', () => this.captureSnapshot());
     }
 
     store.subscribe('STATE_CHANGED', () => this.renderGallery());
@@ -38,7 +43,7 @@ class CameraModule {
 
     if (snapshots.length === 0) {
       this.galleryEl.innerHTML = `
-        <div class="col-span-full glass-card p-8 text-center text-slate-500 font-mono space-y-2">
+        <div class="col-span-full card p-8 text-center text-slate-500 font-mono space-y-2">
           <p class="text-xs">No camera snapshots captured yet.</p>
           <p class="text-[10px] text-slate-600">Click "Capture Snapshot" above or log a pothole detection.</p>
         </div>
@@ -47,10 +52,10 @@ class CameraModule {
     }
 
     this.galleryEl.innerHTML = snapshots.map(snap => `
-      <div class="glass-card p-3 space-y-2 border border-slate-800 rounded-xl overflow-hidden">
-        <img src="${snap.imageUrl}" class="w-full h-32 object-cover rounded-lg border border-slate-800" alt="Snapshot" />
+      <div class="card p-3 space-y-2 rounded-xl overflow-hidden border border-[#334155]">
+        <img src="${snap.imageUrl}" class="w-full h-32 object-cover rounded-lg border border-[#334155]" alt="Snapshot" />
         <div class="flex justify-between items-center text-[11px] font-mono">
-          <span class="text-cyan-400 font-bold">${snap.detectionType}</span>
+          <span class="text-blue-400 font-bold">${snap.detectionType}</span>
           <span class="text-slate-400">${new Date(snap.capturedAt).toLocaleTimeString()}</span>
         </div>
       </div>
