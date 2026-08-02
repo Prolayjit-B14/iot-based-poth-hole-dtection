@@ -1,155 +1,91 @@
-# 🛣️ SmartRoad AI – IoT-Based Pothole & Road Bump Detection System
+# SmartRoad AI - IoT-Based Pothole & Road Bump Detection Web System
 
-A complete full-stack web application for real-time road hazard detection, GPS mapping, live ESP32-CAM monitoring, analytics, and IoT telemetry broadcasting.
+[![System Status](https://img.shields.io/badge/System-ONLINE-10B981?style=for-the-badge)](https://github.com/Prolayjit-B14/iot-based-poth-hole-dtection)
+[![Architecture](https://img.shields.io/badge/Architecture-Vanilla_HTML%2FCSS%2FJS-06B6D4?style=for-the-badge)]()
+[![Hardware](https://img.shields.io/badge/Hardware-ESP32_--_HC--SR04_--_OV2640-F59E0B?style=for-the-badge)]()
 
----
-
-## 📐 System Architecture
-
-```
-+-------------------------------------------------------------+
-|               ESP32 / IoT Hardware (Physical)              |
-|  Ultrasonic Sensor + ESP32-CAM + GPS Module + GSM + Buzzer  |
-+------------------------------+------------------------------+
-                               | (HTTP REST / JSON Payload)
-                               v
-+-------------------------------------------------------------+
-|                  Node.js / Express Backend                  |
-|  - REST API Routes (/api/detections, /api/devices, etc.)   |
-|  - WebSocket Broadcasting Server (/ws)                      |
-|  - Mock / In-Memory Data Store + Supabase PG Client Layer    |
-|  - Live Demo Simulation Engine (Potholes, Bumps, GPS Route) |
-+------------------------------+------------------------------+
-                               | (REST API & WebSockets)
-                               v
-+-------------------------------------------------------------+
-|                React / TypeScript Frontend                  |
-|  - Modern Dark Futuristic Glassmorphism UI (Tailwind CSS)   |
-|  - Leaflet + OpenStreetMap Live GPS Pothole Map             |
-|  - Recharts Analytics Dashboard & Real-Time Sensor Telemetry|
-|  - ESP32-CAM Stream Viewer & Snapshot Gallery               |
-|  - 14 Full Pages (Landing, Dashboard, Live Telemetry, etc.) |
-+-------------------------------------------------------------+
-```
+**SmartRoad AI** is an ultra-fast, zero-dependency Vanilla HTML/CSS/JavaScript web dashboard designed for real-time monitoring of road anomalies (potholes and road bumps) collected by mobile IoT sensing hardware.
 
 ---
 
-## ⚡ Quick Start & Installation
+## 🌟 Architecture & Key Features
 
-### 1. Install Dependencies
-Run the command below from the project root directory:
+- **⚡ Zero Build Step**: Pure ES6 modules running directly in any modern browser without needing Vite, React, npm, or bundlers.
+- **🛰️ Live Telemetry Stream**: Real-time ultrasonic road clearance measurement (Potholes $> 45\text{ cm}$, Road Bumps $< 20\text{ cm}$).
+- **🗺️ Interactive Leaflet GIS Map**: Custom dark-themed Leaflet.js map with live vehicle position tracking and hazard location markers.
+- **📷 ESP32-CAM Vision Feed**: Live camera feed display and manual hazard snapshot gallery.
+- **🎮 Hardware Simulation Engine**: Built-in live hardware simulation engine to trigger simulated potholes, road bumps, and GPS location movements.
+- **📊 Activity Log Audit Table & CSV Export**: Dynamic hazard activity table with inspection modal dialogs and browser CSV downloads.
+- **🔔 Real-Time Notification Center**: Header alert dropdown popover with mark-read management.
+- **🗄️ PostgreSQL Database Schema**: Authoritative SQL schema provided in `database/schema.sql`.
 
-```bash
-# Install root, backend, and frontend packages
-npm run install:all
+---
+
+## 📁 Minimal Folder Structure
+
 ```
-
-Or manually in subdirectories:
-```bash
-cd backend && npm install
-cd ../frontend && npm install
+randy-handeling/
+├── index.html                  # Core single-page application layout & view templates
+├── README.md                   # System documentation & setup guide
+├── .env.example                # Environment reference parameters
+├── database/
+│   └── schema.sql              # Supabase / PostgreSQL database schema definitions
+├── css/
+│   └── style.css               # Design system: dark mode palette, glassmorphism, glowing shadows
+└── js/
+    ├── app.js                  # Main application orchestrator & DOM initialization
+    ├── store.js                # Centralized reactive state management & event emitter
+    ├── router.js               # Tab & view navigation controller
+    ├── services/
+    │   ├── api.js              # REST API client (with offline fallback store)
+    │   └── ws.js               # WebSocket client for telemetry push stream
+    └── modules/
+        ├── map.js              # Leaflet GIS map controller & pin renderer
+        ├── telemetry.js        # Ultrasonic stream visualization controller
+        ├── camera.js           # ESP32-CAM stream & snapshot gallery manager
+        ├── table.js            # Hazard log table & CSV exporter
+        ├── modal.js            # Detection inspect modal dialog controller
+        ├── alerts.js           # Header alert notifications popover controller
+        ├── devices.js          # ESP32 hardware inventory grid controller
+        └── simulation.js       # Live simulation engine button handlers
 ```
 
 ---
 
-## 🚀 Running Locally
+## 🚀 How to Run Locally
 
-### Start Backend Server (Node.js + Express + WebSockets)
-```bash
-cd backend
-npm run dev
-```
-The backend server runs at: `http://localhost:5000` (WebSocket at `ws://localhost:5000/ws`).
+Because the project is built with Vanilla HTML, CSS, and ES6 JavaScript modules:
 
-### Start Frontend Application (React + Vite)
-In a separate terminal window:
-```bash
-cd frontend
-npm run dev
-```
-The application opens at: `http://localhost:3000`.
+1. **Option A (Direct File Launch)**:
+   Open `index.html` directly in any web browser (Chrome, Edge, Firefox, Safari).
+
+2. **Option B (Static Local Server)**:
+   Run any static web server in the project directory:
+   ```bash
+   # Python 3
+   python -m http.server 8000
+   
+   # Or using VS Code Live Server extension
+   ```
+   Open `http://localhost:8000` in your browser.
+
+---
+
+## 📡 Hardware Specs & ESP32 Configuration
+
+- **Controller**: ESP32 Dev Module
+- **Distance Sensor**: HC-SR04 Ultrasonic Sensor (Trig Pin 5, Echo Pin 18)
+- **Camera Module**: OV2640 Camera
+- **GPS Receiver**: NEO-6M GPS Module (TX Pin 16, RX Pin 17)
+- **Buzzer**: 5V Active Buzzer (Pin 19)
+
+### Ultrasonic Threshold Formula:
+$$\text{Baseline Road Surface} = 32.4\text{ cm}$$
+$$\text{Pothole Depth} = \text{Ultrasonic Distance} - \text{Baseline} > 45\text{ cm}$$
+$$\text{Bump Elevation} = \text{Baseline} - \text{Ultrasonic Distance} < 20\text{ cm}$$
 
 ---
 
 ## 🗄️ Database Setup (Supabase / PostgreSQL)
 
-1. Open your Supabase project SQL Editor or local PostgreSQL database.
-2. Execute the schema file located at: `database/schema.sql`.
-3. Set your environment variables in `backend/.env`:
-   ```env
-   SUPABASE_URL=https://your-project.supabase.co
-   SUPABASE_ANON_KEY=your-supabase-anon-key
-   ```
-4. The system automatically works out of the box with the included mock engine if Supabase environment variables are omitted during initial local testing!
-
----
-
-## 🔌 ESP32 API Integration Guide & Specification
-
-### API Endpoint for ESP32 Data Transmission
-- **URL:** `POST http://<YOUR_SERVER_IP>:5000/api/detections`
-- **Headers:** `Content-Type: application/json`
-
-### Example JSON Payload Sent by ESP32:
-```json
-{
-  "deviceId": "ESP32-ROAD-001",
-  "type": "pothole",
-  "severity": "high",
-  "confidence": 94,
-  "distance": 48.2,
-  "latitude": 26.7271,
-  "longitude": 88.3953,
-  "timestamp": "2026-08-01T12:30:00Z",
-  "imageUrl": "https://example.com/image.jpg"
-}
-```
-
-### Example cURL Command to Test Endpoint:
-```bash
-curl -X POST http://localhost:5000/api/detections \
-  -H "Content-Type: application/json" \
-  -d '{
-    "deviceId": "ESP32-ROAD-001",
-    "type": "pothole",
-    "severity": "high",
-    "confidence": 95,
-    "distance": 52.4,
-    "latitude": 26.7271,
-    "longitude": 88.3953,
-    "imageUrl": "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80"
-  }'
-```
-
-### ESP32 Periodic Heartbeat Endpoint
-- **URL:** `POST http://<YOUR_SERVER_IP>:5000/api/device/heartbeat`
-```json
-{
-  "deviceId": "ESP32-ROAD-001",
-  "status": "ONLINE",
-  "batteryLevel": 92,
-  "wifiSignal": 85,
-  "latitude": 26.7271,
-  "longitude": 88.3953
-}
-```
-
----
-
-## 📡 Where to Connect Physical ESP32 Microcontroller Code Later
-
-When flashing code to your physical ESP32 Arduino/ESP-IDF project:
-1. Configure `WiFi.begin("YOUR_SSID", "YOUR_PASSWORD")`.
-2. Use `HTTPClient` to send `POST` requests to `http://<SERVER_IP>:5000/api/detections` whenever the ultrasonic sensor reads distance deviations (&gt;45cm for pothole or &lt;20cm for bump).
-3. If using ESP32-CAM, host the MJPEG stream server on port `81` and configure `CAMERA_STREAM_URL` on the website settings page to `http://<ESP32_CAM_IP>:81/stream`.
-
----
-
-## 🕹️ Interactive Demo Simulation Mode
-
-If physical ESP32 hardware is not connected, use the **Live Demo Simulation Bar** at the top of the dashboard:
-- Click **"Simulate Pothole Detection"** to trigger a real-time simulated pothole event.
-- Click **"Simulate Road Bump"** to log an elevation change.
-- Click **"Simulate Moving GPS"** to move the IoT device marker live on the interactive Leaflet map.
-
-All views, KPI counters, audio/visual badges, alerts, map markers, and charts update instantly via WebSockets!
+Import `database/schema.sql` into your PostgreSQL database or Supabase SQL Editor to create tables for `devices`, `detections`, `alerts`, `users`, and `images`.
